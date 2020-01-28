@@ -1,0 +1,38 @@
+version: '3.3'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx_${PROJECT_ID}
+    ports:
+      - 88${PROJECT_ID}:80
+    volumes:
+      - ./.docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./.docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./.docker/nginx/logs:/var/log/nginx/
+      - ${HTTP_PATH_HOST}:${HTTP_PATH_CONTAINER}
+    working_dir: ${HTTP_PATH_CONTAINER}
+    depends_on:
+      - php
+
+  php:
+    build: .docker/php
+    container_name: php_${PROJECT_ID}
+    environment:
+      XDEBUG_CONFIG: "remote_connect_back=1 remote_enable=1"
+      PHP_IDE_CONFIG: "serverName=Docker"
+    volumes:
+      - ./.docker/php/conf.d:/usr/local/etc/php/conf.d
+      - ${HTTP_PATH_HOST}:${HTTP_PATH_CONTAINER}
+    working_dir: ${HTTP_PATH_CONTAINER}
+
+  db:
+    image: mysql:8.0.19
+    container_name: db_${PROJECT_ID}
+    ports:
+      - 330${PROJECT_ID}:3306
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - ${DB_PATH_HOST}:/var/lib/mysql
