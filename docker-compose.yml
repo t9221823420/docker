@@ -26,6 +26,13 @@ services:
       - ${HTTP_PATH_HOST}:${HTTP_PATH_CONTAINER}
     working_dir: ${HTTP_PATH_CONTAINER}
 
+  npm:
+    image: node:13
+    container_name: npm_${PROJECT_ID}
+    volumes:
+      - .:/usr/src/service
+    working_dir: /usr/src/service
+
   db:
     image: mysql:8.0.19
     container_name: db_${PROJECT_ID}
@@ -36,3 +43,10 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
       - ${DB_PATH_HOST}:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    container_name: adminer_${PROJECT_ID}
+    restart: always
+    ports:
+      - 9${PROJECT_ID}:8080
