@@ -5,7 +5,7 @@ services:
     image: nginx:latest
     container_name: nginx_${PROJECT_ID}
     ports:
-      - 88${PROJECT_ID}:80
+      - 8${PROJECT_ID}:80
     volumes:
       - ./.docker/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./.docker/nginx/conf.d:/etc/nginx/conf.d
@@ -13,36 +13,70 @@ services:
       - ${HTTP_PATH_HOST}:${HTTP_PATH_CONTAINER}
     working_dir: ${HTTP_PATH_CONTAINER}
     depends_on:
-      - php
+      - php56
+      - php74
 
-  php:
-    build: .docker/php
-    container_name: php_${PROJECT_ID}
+  php56:
+    build: .docker/php56
+    container_name: php56_${PROJECT_ID}
     environment:
       XDEBUG_CONFIG: "remote_connect_back=1 remote_enable=1"
       PHP_IDE_CONFIG: "serverName=Docker"
     volumes:
-      - ./.docker/php/conf.d:/usr/local/etc/php/conf.d
+      - ./.docker/php74/conf.d:/usr/local/etc/php74/conf.d
       - ${HTTP_PATH_HOST}:${HTTP_PATH_CONTAINER}
     working_dir: ${HTTP_PATH_CONTAINER}
 
-  npm:
+  php74:
+    build: .docker/php74
+    container_name: php74_${PROJECT_ID}
+    environment:
+      XDEBUG_CONFIG: "remote_connect_back=1 remote_enable=1"
+      PHP_IDE_CONFIG: "serverName=Docker"
+    volumes:
+      - ./.docker/php74/conf.d:/usr/local/etc/php74/conf.d
+      - ${HTTP_PATH_HOST}:${HTTP_PATH_CONTAINER}
+    working_dir: ${HTTP_PATH_CONTAINER}
+
+  npm13:
     image: node:13
-    container_name: npm_${PROJECT_ID}
+    container_name: npm13_${PROJECT_ID}
     volumes:
       - .:/usr/src/service
     working_dir: /usr/src/service
 
-  db:
-    image: mysql:8.0.19
-    container_name: db_${PROJECT_ID}
+  psg:
+    image: postgres:12.1
+    container_name: psg_${PROJECT_ID}
     ports:
-      - 330${PROJECT_ID}:3306
+      - 30${PROJECT_ID}:5432
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - ${DB_PATH_HOST}/psg:/var/lib/postgresql/data
+
+  mysql57:
+    image: mysql:5.7.29
+    container_name: mysql57_${PROJECT_ID}
+    ports:
+      - 31${PROJECT_ID}:3306
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
-      - ${DB_PATH_HOST}:/var/lib/mysql
+      - ${DB_PATH_HOST}/mysql57:/var/lib/mysql
+
+  mysql80:
+    image: mysql:8.0.19
+    container_name: db_${PROJECT_ID}
+    ports:
+      - 32${PROJECT_ID}:3306
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - ${DB_PATH_HOST}/mysql80:/var/lib/mysql
 
   adminer:
     image: adminer
