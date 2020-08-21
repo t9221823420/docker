@@ -6,3 +6,5 @@
 
 # composer vendor dir
 vendor
+
+logs/*

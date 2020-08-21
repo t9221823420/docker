@@ -9,19 +9,23 @@ RUN apt-get update && apt-get install -y \
 		libxpm-dev \
 		libzip-dev \
 		libonig-dev \
+		libpq-dev \
 	&& docker-php-ext-configure gd \
 		--with-freetype \
 		--with-jpeg \
 		--with-webp \
 		--with-xpm \
     && docker-php-ext-install \
-       		gd \
-       		zip \
-       		bcmath \
-       		mysqli \
-       		opcache \
-       		mbstring \
-       		pdo_mysql
+       	gd \
+        zip \
+        bcmath \
+        opcache \
+        mbstring \
+        mysqli \
+        pgsql \
+        pdo \
+        pdo_mysql \
+        pdo_pgsql
 
 # Install XDebug
 RUN pecl install xdebug-2.9.1 \

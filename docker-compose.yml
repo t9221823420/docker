@@ -4,8 +4,9 @@ services:
   nginx:
     image: nginx:latest
     container_name: nginx_${PROJECT_ID}
+    restart: on-failure
     ports:
-      - 8${PROJECT_ID}:80
+      - 80${PROJECT_ID}:80
     volumes:
       - ./.docker/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./.docker/nginx/conf.d:/etc/nginx/conf.d
@@ -19,35 +20,38 @@ services:
   php56:
     build: .docker/php56
     container_name: php56_${PROJECT_ID}
+    restart: on-failure
     environment:
       XDEBUG_CONFIG: "remote_connect_back=1 remote_enable=1"
-      PHP_IDE_CONFIG: "serverName=Docker"
     volumes:
-      - ./.docker/php74/conf.d:/usr/local/etc/php74/conf.d
+      - ./.docker/php56/conf.d:/usr/local/etc/php/conf.d
+      - ./.docker/php56/logs:/var/log/php/
       - ${HTTP_PATH_HOST}:${HTTP_PATH_CONTAINER}
     working_dir: ${HTTP_PATH_CONTAINER}
 
   php74:
     build: .docker/php74
     container_name: php74_${PROJECT_ID}
+    restart: on-failure
     environment:
-      XDEBUG_CONFIG: "remote_connect_back=1 remote_enable=1"
-      PHP_IDE_CONFIG: "serverName=Docker"
+      XDEBUG_CONFIG: "remote_enable=1 remote_host=host.docker.internal"
     volumes:
-      - ./.docker/php74/conf.d:/usr/local/etc/php74/conf.d
+      - ./.docker/php74/conf.d:/usr/local/etc/php/conf.d
+      - ./.docker/php74/logs:/var/log/php/
       - ${HTTP_PATH_HOST}:${HTTP_PATH_CONTAINER}
     working_dir: ${HTTP_PATH_CONTAINER}
 
-  npm13:
-    image: node:13
+  npm14:
+    image: node:14.8
     container_name: npm13_${PROJECT_ID}
+    restart: on-failure
     volumes:
       - .:/usr/src/service
     working_dir: /usr/src/service
 
-  psg:
-    image: postgres:12.1
-    container_name: psg_${PROJECT_ID}
+  psg12:
+    image: postgres:12.4
+    container_name: psg12docker maria db_${PROJECT_ID}
     ports:
       - 30${PROJECT_ID}:5432
     restart: always
@@ -57,30 +61,44 @@ services:
       - ${DB_PATH_HOST}/psg:/var/lib/postgresql/data
 
   mysql57:
-    image: mysql:5.7.29
+    image: mysql:5.7.31
     container_name: mysql57_${PROJECT_ID}
+    restart: on-failure
     ports:
       - 31${PROJECT_ID}:3306
-    restart: always
+      - 31${PROJECT_ID}0:33060
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
       - ${DB_PATH_HOST}/mysql57:/var/lib/mysql
 
   mysql80:
-    image: mysql:8.0.19
-    container_name: db_${PROJECT_ID}
+    image: mysql:8.0.21
+    container_name: mysql80_${PROJECT_ID}
+    restart: on-failure
     ports:
       - 32${PROJECT_ID}:3306
-    restart: always
+      - 32${PROJECT_ID}0:33060
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
       - ${DB_PATH_HOST}/mysql80:/var/lib/mysql
 
+  mariadb10:
+    image: mariadb:10.5.5
+    container_name: mariadb10_${PROJECT_ID}
+    restart: on-failure
+    ports:
+      - 33${PROJECT_ID}:3306
+      - 33${PROJECT_ID}0:33060
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - ${DB_PATH_HOST}/mariadb10:/var/lib/mysql
+
   adminer:
     image: adminer
     container_name: adminer_${PROJECT_ID}
-    restart: always
+    restart: on-failure
     ports:
-      - 9${PROJECT_ID}:8080
+      - 90${PROJECT_ID}:8080
