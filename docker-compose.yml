@@ -49,6 +49,11 @@ services:
       - .:/usr/src/service
     working_dir: /usr/src/service
 
+  redis:
+    image: library/redis:6.2.4
+    ports:
+      - 63${PROJECT_ID}:6379
+
   psg12:
     image: postgres:12.4
     container_name: psg12docker maria db_${PROJECT_ID}
